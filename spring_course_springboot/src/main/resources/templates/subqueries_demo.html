@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демонстрация подзапросов</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .card h2 { color: #2c3e50; margin-bottom: 15px; border-left: 4px solid #3498db; padding-left: 15px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #2c3e50; color: white; }
+        .badge { background: #3498db; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.8em; }
+        .operator { background: #e67e22; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.8em; margin-right: 10px; }
+        .btn-back { display: inline-block; margin-top: 20px; color: #2c3e50; text-decoration: none; }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .pagination a, .pagination span { padding: 8px 16px; border-radius: 8px; text-decoration: none; color: #2c3e50; background: #f8f9fa; border: 1px solid #ddd; }
+        .pagination a:hover { background: #3498db; color: white; }
+        .pagination .active { background: #2c3e50; color: white; border-color: #2c3e50; }
+        .info-text { margin-bottom: 15px; color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1>Демонстрация подзапросов SQL</h1>
+        <p>Использованы операторы: <span class="operator">DISTINCT</span> <span class="operator">ORDER BY</span> <span class="operator">LIMIT</span> <span class="operator">OFFSET</span></p>
+    </div>
+
+    <!-- 1. DISTINCT подзапрос -->
+    <div class="card">
+        <h2>Подзапрос с DISTINCT</h2>
+        <p><strong>Запрос:</strong> Уникальные пациенты, которые были на приёме за последние 7 дней</p>
+        <div th:if="${distinctPatients != null and !distinctPatients.isEmpty()}">
+            <table>
+                <thead>
+                <tr><th>ID</th><th>ФИО</th><th>Телефон</th><th>Номер полиса</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${distinctPatients}">
+                    <td th:text="${p.kodPacienta}"></td>
+                    <td th:text="${p.fio}"></td>
+                    <td th:text="${p.telefon}"></td>
+                    <td th:text="${p.nomerPolisa}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 10px;"><strong>Всего уникальных пациентов:</strong> <span class="badge" th:text="${distinctPatients.size()}"></span></p>
+        </div>
+        <div th:unless="${distinctPatients != null and !distinctPatients.isEmpty()}">
+            <p>Нет данных о пациентах за последнюю неделю</p>
+        </div>
+    </div>
+
+    <!-- 2. ORDER BY + LIMIT подзапрос -->
+    <div class="card">
+        <h2>Подзапрос с ORDER BY и LIMIT</h2>
+        <p><strong>Запрос:</strong> Топ-5 врачей по количеству проведённых приёмов</p>
+        <div th:if="${topDoctors != null and !topDoctors.isEmpty()}">
+            <table>
+                <thead>
+                <tr><th>ID</th><th>ФИО</th><th>Кабинет</th><th>Специализация</th><th>Кол-во приёмов</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="doc : ${topDoctors}">
+                    <td th:text="${doc[0]}"></td>
+                    <td th:text="${doc[1]}"></td>
+                    <td th:text="${doc[2]}"></td>
+                    <td th:text="${doc[3]}"></td>
+                    <td><span class="badge" th:text="${doc[4]}"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${topDoctors != null and !topDoctors.isEmpty()}">
+            <p>Нет данных о врачах</p>
+        </div>
+    </div>
+
+    <!-- 3. OFFSET + LIMIT подзапрос с пагинацией -->
+    <div class="card">
+        <h2>Подзапрос с OFFSET и LIMIT (Пагинация)</h2>
+        <p><strong>Запрос:</strong> Пациенты, у которых есть приёмы</p>
+        <div class="info-text">
+            Страница <span th:text="${currentPage}"></span> из <span th:text="${totalPages}"></span> |
+            Всего пациентов: <span class="badge" th:text="${totalPatients}"></span> |
+            Записей на странице: <span class="badge" th:text="${limit}"></span>
+        </div>
+
+        <div th:if="${patients != null and !patients.isEmpty()}">
+            <table>
+                <thead>
+                <tr><th>ID</th><th>ФИО</th><th>Телефон</th><th>Номер полиса</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${patients}">
+                    <td th:text="${p.kodPacienta}"></td>
+                    <td th:text="${p.fio}"></td>
+                    <td th:text="${p.telefon}"></td>
+                    <td th:text="${p.nomerPolisa}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Пагинация -->
+            <div class="pagination">
+
+                <!-- Номера страниц -->
+                <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                   th:if="${pageNum >= currentPage - 2 and pageNum <= currentPage + 2}"
+                   th:href="@{/doctor/chief/subqueries(page=${pageNum})}"
+                   th:text="${pageNum}"
+                   th:class="${pageNum == currentPage ? 'active' : ''}">
+                </a>
+            </div>
+        </div>
+        <div th:unless="${patients != null and !patients.isEmpty()}">
+            <p>Нет данных о пациентах</p>
+        </div>
+    </div>
+
+    <a th:href="@{/doctor/chief/dashboard}" class="btn-back">← Вернуться в панель главного врача</a>
+</div>
+</body>
+</html>

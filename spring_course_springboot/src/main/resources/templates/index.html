@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - Поликлиника</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Стили для заставки (сплеш-скрина) */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .splash-content {
+            text-align: center;
+            color: white;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .splash-logo {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .splash-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .splash-subtitle {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .splash-db {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 18px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 1em;
+        }
+
+        .splash-info {
+            margin-top: 25px;
+            font-size: 0.85em;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+
+        .splash-progress {
+            width: 200px;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin: 30px auto 0;
+            overflow: hidden;
+        }
+
+        .splash-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #ffd700;
+            border-radius: 3px;
+            animation: loading 2.5s ease-out forwards;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* Основной контент (изначально скрыт) */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+        }
+
+        /* Ваши оригинальные стили */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a252f;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2c3e50;
+            color: #2c3e50;
+        }
+
+        .btn-outline:hover {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .btn-outline-pink {
+            background: transparent;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .btn-outline-pink:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .features {
+            margin-top: 50px;
+            text-align: left;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .feature {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .feature h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .feature p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.95em;
+            }
+
+            .splash-title {
+                font-size: 1.5em;
+            }
+
+            .splash-logo {
+                font-size: 3.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Заставка (сплеш-скрин) -->
+<div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+        <div class="splash-logo"></div>
+        <h1 class="splash-title">Система управления поликлиникой</h1>
+        <p class="splash-subtitle">Автоматизация медицинского учреждения</p>
+        <div class="splash-db">
+            База данных: MySQL | Поликлиника
+        </div>
+        <div class="splash-info">
+            <p>Управление пациентами и врачами</p>
+            <p>Запись на приём и направления на услуги</p>
+            <p>Отчёты и статистика</p>
+            <p>Роли: Пациент \ Врач-специалист \ Главный врач</p>
+        </div>
+        <div class="splash-progress">
+            <div class="splash-progress-bar"></div>
+        </div>
+        <div class="splash-info" style="margin-top: 15px;">
+            <p>Курсовая работа по управлению данными</p>
+            <p>Тема: «Разработка информационной системы поликлиники»</p>
+            <p>© 2026</p>
+        </div>
+    </div>
+</div>
+
+<!-- Основной контент (ваша оригинальная страница) -->
+<div id="mainContent" class="main-content">
+    <div class="container">
+        <h1>Система поликлиники</h1>
+        <p class="subtitle">Добро пожаловать в систему управления</p>
+
+        <div class="button-group">
+            <a th:href="@{/login}" class="btn btn-outline">Вход для пациентов</a>
+            <a th:href="@{/doctor/login}" class="btn btn-outline-pink">Вход для врачей</a>
+            <a th:href="@{/register}" class="btn btn-primary">Регистрация пациента</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Скрыть заставку через 2.5 секунды и показать основной контент
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const splash = document.getElementById('splashScreen');
+            const mainContent = document.getElementById('mainContent');
+
+            splash.style.opacity = '0';
+            setTimeout(function() {
+                splash.style.display = 'none';
+                mainContent.classList.add('visible');
+            }, 800);
+        }, 2500);
+    });
+</script>
+
+</body>
+</html>

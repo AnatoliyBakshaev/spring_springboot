@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои записи</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+        }
+
+        .appointment-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 3px solid #2c3e50;
+            transition: box-shadow 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .appointment-card:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .appointment-date {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .appointment-date::before {
+            content: '📅 ';
+        }
+
+        .status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-upcoming {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-completed {
+            background: #cfe2ff;
+            color: #004085;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .appointment-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .detail-row {
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 100px;
+            font-size: 0.9em;
+        }
+
+        .detail-label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-info {
+            background: #3498db;
+        }
+
+        .btn-info:hover {
+            background: #2980b9;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .appointment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .detail-label {
+                width: 80px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Мои записи к врачу</h1>
+    <p>Здесь отображаются все ваши записи на приём</p>
+</div>
+
+<div class="container">
+    <div class="content">
+        <h2>Предстоящие приёмы</h2>
+
+        <div th:if="${upcomingAppointments.isEmpty()}" class="empty-message">
+            <p>У вас нет предстоящих записей</p>
+            <a th:href="@{/patient/book-appointment}" style="color: #2c3e50;">Записаться на приём →</a>
+        </div>
+
+        <div th:each="appointment : ${upcomingAppointments}" class="appointment-card">
+            <div class="appointment-header">
+                <span class="appointment-date" th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span>
+                <span class="status status-upcoming">Предстоит</span>
+            </div>
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <span class="detail-label">ID приёма</span>
+                    <span class="detail-value" th:text="${appointment.kodPriema}"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Жалобы</span>
+                    <span class="detail-value" th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span>
+                </div>
+                <div class="button-group">
+                    <a th:href="@{/patient/cancel-appointment/__${appointment.kodPriema}__}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Вы уверены, что хотите отменить запись?')">Отменить запись</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 40px;">История посещений</h2>
+
+        <div th:if="${#lists.isEmpty(historyAppointments)}" class="empty-message">
+            <p>У вас нет истории посещений</p>
+        </div>
+
+        <div th:each="appointment : ${historyAppointments}" class="appointment-card">
+            <div class="appointment-header">
+                <span class="appointment-date" th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span>
+                <span th:class="${appointment.statusVypolneniyaPriema ? 'status status-completed' : 'status status-cancelled'}">
+                    <span th:if="${appointment.statusVypolneniyaPriema}">Выполнен</span>
+                    <span th:unless="${appointment.statusVypolneniyaPriema}">Не выполнен</span>
+                </span>
+            </div>
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <span class="detail-label">Жалобы</span>
+                    <span class="detail-value" th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span>
+                </div>
+                <div class="detail-row" th:if="${appointment.diagnoz != null}">
+                    <span class="detail-label">Диагноз</span>
+                    <span class="detail-value" th:text="${appointment.diagnoz}"></span>
+                </div>
+                <div class="button-group">
+                    <a th:href="@{/patient/direction/__${appointment.kodPriema}__/all}" class="btn btn-info">Направления на услуги</a>
+                </div>
+            </div>
+        </div>
+
+        <a th:href="@{/patient/dashboard}" class="btn-back">← Вернуться в личный кабинет</a>
+    </div>
+</div>
+</body>
+</html>

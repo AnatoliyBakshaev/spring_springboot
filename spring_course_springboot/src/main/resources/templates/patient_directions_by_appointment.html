@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Направления по приёму</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .appointment-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 3px solid #2c3e50;
+        }
+
+        .appointment-info p {
+            margin-bottom: 5px;
+        }
+
+        .appointment-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+        }
+
+        .direction-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #2c3e50;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .direction-card:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transform: translateX(3px);
+        }
+
+        .direction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .direction-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .direction-name::before {
+        }
+
+        .direction-status {
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .detail-row {
+            margin-bottom: 6px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 90px;
+            font-size: 0.85em;
+        }
+
+        .detail-label::before {
+            content: '•';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .direction-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .detail-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Направления по приёму</h1>
+    <p th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></p>
+</div>
+
+<div class="container">
+    <div class="content">
+        <div class="appointment-info">
+            <p><strong>Пациент:</strong> <span th:text="${patient.fio}"></span></p>
+            <p><strong>Жалобы:</strong> <span th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span></p>
+        </div>
+
+        <div class="section">
+            <h3>📋 Направления на услуги</h3>
+            <div th:if="${directions.isEmpty()}" class="empty-message">
+                <p>По данному приёму нет направлений на услуги</p>
+            </div>
+            <div th:each="direction : ${directions}" class="direction-card"
+                 th:onclick="|window.location.href='/springboot-rest/patient/direction/${direction.kodPriema}/${direction.kodUslugi}'|">
+                <div class="direction-header">
+                    <span class="direction-name" th:text="${direction.serviceName}"></span>
+                    <span th:class="${direction.statusVypolneniyaUslugi ? 'direction-status status-completed' : 'direction-status status-pending'}">
+                        <span th:if="${direction.statusVypolneniyaUslugi}">Выполнено</span>
+                        <span th:unless="${direction.statusVypolneniyaUslugi}">Ожидает</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Тип услуги</span>
+                    <span th:text="${direction.serviceType}"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Стоимость</span>
+                    <span th:text="${direction.serviceCost} + ' руб.'"></span>
+                </div>
+                <div class="detail-row" th:if="${direction.primechanie != null}">
+                    <span class="detail-label">Примечание</span>
+                    <span th:text="${direction.primechanie}"></span>
+                </div>
+            </div>
+        </div>
+
+        <a th:href="@{/patient/appointments}" class="btn-back">← Вернуться к списку записей</a>
+    </div>
+</div>
+</body>
+</html>

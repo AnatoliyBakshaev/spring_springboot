@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет врача</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        .welcome-card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            transition: box-shadow 0.3s;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 140px;
+            font-size: 0.9em;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: normal;
+        }
+
+        .status-working {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-off {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .actions {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        .actions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+        }
+
+        .btn-secondary {
+            background: #e67e22;
+        }
+
+        .btn-secondary:hover {
+            background: #d35400;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                display: block;
+                text-align: center;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-content">
+        <h1>🏥 Медицинский центр - Панель врача</h1>
+        <a th:href="@{/logout}" class="logout-btn">🚪 Выйти</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Здравствуйте, <span th:text="${doctor.fio}"></span>!</h2>
+        <p>Добро пожаловать в вашу рабочую панель. Здесь вы можете управлять расписанием, просматривать пациентов и вести медицинскую документацию.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>👨‍⚕️ Личная информация</h3>
+            <div class="info-item">
+                <span class="info-label">ФИО:</span>
+                <span class="info-value" th:text="${doctor.fio}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">ID сотрудника:</span>
+                <span class="info-value" th:text="${doctor.kodSotrudnika}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Номер кабинета:</span>
+                <span class="info-value" th:text="${doctor.nomerKabineta}"></span>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>💼 Рабочая информация</h3>
+            <div class="info-item">
+                <span class="info-label">Код специализации:</span>
+                <span class="info-value" th:text="${doctor.kodSpecializatsii}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Статус:</span>
+                <span class="info-value">
+                    <span th:class="${doctor.statusRaboty == 'работает' ? 'status-badge status-working' : 'status-badge status-off'}"
+                          th:text="${doctor.statusRaboty}"></span>
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Логин:</span>
+                <span class="info-value" th:text="${doctor.login}"></span>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>📊 Статистика</h3>
+            <div class="info-item">
+                <span class="info-label">Принято пациентов:</span>
+                <span class="info-value">0 (сегодня)</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Запланировано:</span>
+                <span class="info-value">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Рабочих дней:</span>
+                <span class="info-value">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <h3>📋 Доступные действия</h3>
+        <a th:href="@{/doctor/specialist/appointments}" class="btn">📅 Мои приёмы</a>
+        <a href="#" class="btn btn-secondary">👥 Список пациентов</a>
+        <a href="#" class="btn btn-success">📝 Медицинские карты</a>
+        <a href="#" class="btn">💊 Назначения и рецепты</a>
+        <a href="#" class="btn btn-secondary">📊 Отчеты</a>
+    </div>
+</div>
+</body>
+</html>

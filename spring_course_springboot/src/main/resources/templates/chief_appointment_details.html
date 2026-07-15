@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали приёма - Главный врач</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .role-badge {
+            background: #ffd700;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-block {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-block h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .info-row {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 130px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-right: 10px;
+            transition: transform 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Детали приёма</h1>
+        <div class="role-badge">Просмотр от главного врача</div>
+    </div>
+
+    <div class="content">
+        <!-- Информация о пациенте -->
+        <div class="info-block">
+            <h3> Информация о пациенте</h3>
+            <div class="info-row">
+                <span class="info-label">ФИО:</span>
+                <span class="info-value" th:text="${patient.fio}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Дата рождения:</span>
+                <span class="info-value" th:text="${#dates.format(patient.dataRozhdeniya, 'dd.MM.yyyy')}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Телефон:</span>
+                <span class="info-value" th:text="${patient.telefon}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Номер полиса:</span>
+                <span class="info-value" th:text="${patient.nomerPolisa}"></span>
+            </div>
+        </div>
+
+        <!-- Информация о враче - исправлено -->
+        <div class="info-block">
+            <h3>️ Информация о враче</h3>
+            <div class="info-row" th:if="${appointmentDoctor != null}">
+                <span class="info-label">ФИО врача:</span>
+                <span class="info-value" th:text="${appointmentDoctor.fio}"></span>
+            </div>
+            <div class="info-row" th:if="${appointmentDoctor != null}">
+                <span class="info-label">Специализация:</span>
+                <span class="info-value" th:text="${appointmentDoctor.specializationName}"></span>
+            </div>
+            <div class="info-row" th:if="${appointmentDoctor != null}">
+                <span class="info-label">Номер кабинета:</span>
+                <span class="info-value" th:text="${appointmentDoctor.nomerKabineta}"></span>
+            </div>
+            <div th:if="${appointmentDoctor == null}" class="info-row">
+                <span class="info-label">Врач:</span>
+                <span class="info-value">Информация недоступна</span>
+            </div>
+        </div>
+
+        <!-- Информация о приёме -->
+        <div class="info-block">
+            <h3>📅 Информация о приёме</h3>
+            <div class="info-row">
+                <span class="info-label">ID приёма:</span>
+                <span class="info-value" th:text="${appointment.kodPriema}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Дата и время:</span>
+                <span class="info-value" th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Статус:</span>
+                <span class="info-value">
+                    <span th:if="${appointment.statusVypolneniyaPriema}" class="status-badge status-completed">Приём завершён</span>
+                    <span th:unless="${appointment.statusVypolneniyaPriema}" class="status-badge status-pending">Ожидает приёма</span>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Жалобы пациента:</span>
+                <span class="info-value" th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span>
+            </div>
+        </div>
+
+        <!-- Диагноз (если есть) -->
+        <div th:if="${appointment.diagnoz != null}" class="info-block">
+            <h3> Диагноз и рекомендации</h3>
+            <div class="info-row">
+                <span class="info-value" th:text="${appointment.diagnoz}" style="white-space: pre-wrap;"></span>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="button-group">
+            <a th:href="@{/doctor/chief/all-appointments}" class="btn">← Назад к списку приёмов</a>
+            <a th:href="@{/doctor/chief/appointment/__${appointment.kodPriema}__/directions}" class="btn">📋 Направления на услуги</a>
+            <a th:href="@{/doctor/chief/dashboard}" class="btn-back">← Вернуться в панель</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

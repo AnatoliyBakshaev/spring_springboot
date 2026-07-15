@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ввод результатов услуги</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .info-block {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .info-block h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            padding-left: 12px;
+            font-size: 1.2em;
+        }
+
+        .info-row {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .info-row:hover {
+            padding-left: 8px;
+            border-bottom-color: #3498db;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 120px;
+            font-size: 0.9em;
+        }
+
+        .info-label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        .info-value {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        label::before {
+            margin-right: 6px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 150px;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .radio-group label::before {
+            content: '';
+            margin-right: 0;
+        }
+
+        .radio-group input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .info-label {
+                min-width: 100%;
+            }
+
+            .info-row {
+                flex-direction: column;
+            }
+
+            .radio-group {
+                gap: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Ввод результатов</h1>
+        <p th:text="${usluga.nazvanie}"></p>
+    </div>
+
+    <div class="content">
+        <div class="info-block">
+            <h3>👤 Информация о пациенте</h3>
+            <div class="info-row">
+                <span class="info-label">Пациент</span>
+                <span class="info-value" th:text="${patient.fio}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Услуга</span>
+                <span class="info-value" th:text="${usluga.nazvanie}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Тип услуги</span>
+                <span class="info-value" th:text="${usluga.tip}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Дата назначения</span>
+                <span class="info-value" th:text="${#dates.format(direction.dataUslugi, 'dd.MM.yyyy HH:mm')}"></span>
+            </div>
+            <div class="info-row" th:if="${direction.primechanie != null}">
+                <span class="info-label">Примечание</span>
+                <span class="info-value" th:text="${direction.primechanie}"></span>
+            </div>
+        </div>
+
+        <form th:action="@{/doctor/direction/__${appointmentId}__/__${uslugaId}__/save-results}" method="post">
+            <div class="form-group">
+                <label for="results">Результаты исследования</label>
+                <textarea id="results" name="results" required placeholder="Введите результаты обследования, показатели, заключение..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Соответствие норме</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="norma" value="true" required> В норме
+                    </label>
+                    <label>
+                        <input type="radio" name="norma" value="false"> Отклонение от нормы
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Сохранить результаты</button>
+        </form>
+
+        <a th:href="@{/doctor/appointment/__${appointmentId}__/directions}" class="btn-back">← Вернуться к направлениям</a>
+    </div>
+</div>
+</body>
+</html>

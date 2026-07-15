@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои приёмы - Главный врач</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .role-badge {
+            background: #ffd700;
+            color: #2c3e50;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .welcome-card::after {
+            content: '👨‍⚕️';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .welcome-card h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .section:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            font-size: 1.3em;
+        }
+
+        .stats-mini {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.85em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .appointment-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2c3e50;
+            transition: box-shadow 0.3s;
+        }
+
+        .appointment-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .appointment-time {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .appointment-time::before {
+            content: '📅 ';
+        }
+
+        .status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-upcoming {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-today {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #cfe2ff;
+            color: #004085;
+        }
+
+        .appointment-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .detail-row:hover {
+            padding-left: 5px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 80px;
+            font-size: 0.9em;
+        }
+
+        .detail-label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 0.9em;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-left {
+                justify-content: center;
+            }
+
+            .role-badge {
+                white-space: normal;
+            }
+
+            .logout-btn {
+                white-space: normal;
+            }
+
+            .appointment-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .detail-label {
+                min-width: 100%;
+            }
+
+            .detail-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <span class="role-badge">⭐ Главный врач - Мои приёмы</span>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn">🚪 Выйти</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Здравствуйте, <span th:text="${doctor.fio}"></span>!</h2>
+        <p>Здесь отображаются все ваши приёмы как врача. Вы можете отмечать выполненные приёмы и оставлять диагнозы.</p>
+    </div>
+
+    <div class="section">
+        <div class="stats-mini">
+            <span class="stat-badge">Сегодня: <span th:text="${todayAppointments.size()}"></span></span>
+            <span class="stat-badge">Предстоит: <span th:text="${upcomingAppointments.size()}"></span></span>
+            <span class="stat-badge">Всего: <span th:text="${allAppointments.size()}"></span></span>
+        </div>
+    </div>
+
+    <div id="upcoming-section" class="section">
+        <h3>Предстоящие приёмы</h3>
+        <div th:if="${upcomingAppointments.isEmpty()}" class="empty-message">
+            <p>Нет предстоящих приёмов</p>
+        </div>
+        <div th:each="appointment : ${upcomingAppointments}" class="appointment-card">
+            <div class="appointment-header">
+                <span class="appointment-time" th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span>
+                <span class="status status-upcoming">Предстоит</span>
+            </div>
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <span class="detail-label">Пациент</span>
+                    <span class="detail-value" th:text="${patientMap[appointment.kodPacienta].fio}"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Жалобы</span>
+                    <span class="detail-value" th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span>
+                </div>
+                <div class="button-group">
+                    <a th:href="@{/doctor/chief/my-appointment/__${appointment.kodPriema}__}" class="btn">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-section" class="section">
+        <h3>История приёмов</h3>
+        <div th:if="${allAppointments.isEmpty()}" class="empty-message">
+            <p>Нет истории приёмов</p>
+        </div>
+        <div th:each="appointment : ${allAppointments}"
+             th:if="${appointment.statusVypolneniyaPriema}"
+             class="appointment-card">
+            <div class="appointment-header">
+                <span class="appointment-time" th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span>
+                <span class="status status-completed">Выполнен</span>
+            </div>
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <span class="detail-label">Пациент</span>
+                    <span class="detail-value" th:text="${patientMap[appointment.kodPacienta].fio}"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Жалобы</span>
+                    <span class="detail-value" th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span>
+                </div>
+                <div class="detail-row" th:if="${appointment.diagnoz != null}">
+                    <span class="detail-label">Диагноз</span>
+                    <span class="detail-value" th:text="${appointment.diagnoz}"></span>
+                </div>
+                <div class="button-group">
+                    <a th:href="@{/doctor/chief/my-appointment/__${appointment.kodPriema}__}" class="btn">Просмотреть</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a th:href="@{/doctor/chief/dashboard}" class="btn-back">← Вернуться в панель главного врача</a>
+</div>
+</body>
+</html>

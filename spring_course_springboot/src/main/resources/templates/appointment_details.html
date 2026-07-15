@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали приёма</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-block {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e8e8e8;
+            transition: all 0.3s;
+        }
+
+        .info-block:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .info-block h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            padding-left: 12px;
+            font-size: 1.2em;
+        }
+
+        .info-row {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e8e8e8;
+            transition: all 0.2s;
+        }
+
+        .info-row:hover {
+            padding-left: 8px;
+            border-bottom-color: #3498db;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 130px;
+            font-size: 0.9em;
+        }
+
+        .info-label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+            font-size: 0.8em;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #d4edda, #a8e6cf);
+            color: #155724;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        label::before {
+            content: '✍️ ';
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-right: 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .info-label {
+                width: 100px;
+                font-size: 0.85em;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Детали приёма</h1>
+        <p th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></p>
+    </div>
+
+    <div class="content">
+        <!-- Информация о пациенте -->
+        <div class="info-block">
+            <h3> Информация о пациенте</h3>
+            <div class="info-row">
+                <span class="info-label">ФИО:</span>
+                <span class="info-value" th:text="${patient.fio}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Дата рождения:</span>
+                <span class="info-value" th:text="${#dates.format(patient.dataRozhdeniya, 'dd.MM.yyyy')}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Телефон:</span>
+                <span class="info-value" th:text="${patient.telefon}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Номер полиса:</span>
+                <span class="info-value" th:text="${patient.nomerPolisa}"></span>
+            </div>
+        </div>
+
+        <!-- Информация о приёме -->
+        <div class="info-block">
+            <h3>Информация о приёме</h3>
+            <div class="info-row">
+                <span class="info-label">Дата и время:</span>
+                <span class="info-value" th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Статус:</span>
+                <span class="info-value">
+                    <span th:if="${appointment.statusVypolneniyaPriema}" class="status-badge status-completed">✅ Приём завершён</span>
+                    <span th:unless="${appointment.statusVypolneniyaPriema}" class="status-badge status-pending">⏳ Ожидает приёма</span>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Жалобы пациента:</span>
+                <span class="info-value" th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span>
+            </div>
+        </div>
+
+        <!-- Форма для завершения приёма -->
+        <div th:unless="${appointment.statusVypolneniyaPriema}" class="info-block">
+            <h3>Завершить приём</h3>
+            <form th:action="@{/doctor/appointment/complete/__${appointment.kodPriema}__}" method="post">
+                <div class="form-group">
+                    <label for="diagnosis">Диагноз и рекомендации</label>
+                    <textarea id="diagnosis" name="diagnosis" required placeholder="Введите диагноз, рекомендации и назначения..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">✅ Отметить как выполненный</button>
+            </form>
+        </div>
+
+        <!-- Отображение диагноза если приём завершён -->
+        <div th:if="${appointment.statusVypolneniyaPriema and appointment.diagnoz != null}" class="info-block">
+            <h3>Диагноз и рекомендации</h3>
+            <div class="info-row">
+                <span class="info-value" th:text="${appointment.diagnoz}" style="white-space: pre-wrap; line-height: 1.5;"></span>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="button-group">
+            <a th:href="@{/doctor/specialist/appointments}" class="btn-back">← Вернуться к списку приёмов</a>
+            <a th:href="@{/doctor/appointment/__${appointment.kodPriema}__/directions}" class="btn">Направления на услуги</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

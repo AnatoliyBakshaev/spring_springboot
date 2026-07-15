@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование врача</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0 10px;
+            }
+
+            .header h1 {
+                font-size: 1.3em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Редактирование врача</h1>
+        <p>Измените данные врача</p>
+    </div>
+
+    <div class="content">
+        <form action="#" th:action="@{/doctor/chief/edit-doctor/__${editDoctor.kodSotrudnika}__}" method="post">
+            <div class="form-group">
+                <label for="fio">ФИО</label>
+                <input type="text" id="fio" name="fio" th:value="${editDoctor.fio}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="specializationId">Специализация</label>
+                <select id="specializationId" name="specializationId" required>
+                    <option th:each="spec : ${specializations}"
+                            th:value="${spec.kodSpecializatsii}"
+                            th:text="${spec.nazvanieDolzhnosti}"
+                            th:selected="${spec.kodSpecializatsii == editDoctor.kodSpecializatsii}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nomerKabineta">Номер кабинета</label>
+                <input type="number" id="nomerKabineta" name="nomerKabineta" th:value="${editDoctor.nomerKabineta}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="statusRaboty">Статус работы</label>
+                <select id="statusRaboty" name="statusRaboty" required>
+                    <option value="работает" th:selected="${editDoctor.statusRaboty == 'работает'}">Работает</option>
+                    <option value="не работает" th:selected="${editDoctor.statusRaboty == 'не работает'}">Не работает</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="login">Логин</label>
+                <input type="text" id="login" name="login" th:value="${editDoctor.login}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" th:value="${editDoctor.parol}" required>
+            </div>
+
+            <button type="submit">Сохранить изменения</button>
+        </form>
+
+        <a th:href="@{/doctor/chief/manage-doctors}" class="back-link">← Вернуться к списку врачей</a>
+    </div>
+</div>
+</body>
+</html>

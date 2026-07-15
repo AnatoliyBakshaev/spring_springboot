@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Направления на услуги - Просмотр</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome-card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 0.8em;
+        }
+
+        .direction-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .direction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .direction-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .direction-status {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .direction-details {
+            margin-top: 10px;
+        }
+
+        .detail-row {
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 100px;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .row-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .row-2cols {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-content">
+        <h1>🏥 Медицинский центр - Направления на услуги</h1>
+        <a th:href="@{/logout}" class="logout-btn">🚪 Выйти</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Приём пациента: <span th:text="${patient.fio}"></span></h2>
+        <p>Дата и время: <span th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span></p>
+        <p><strong>Жалобы:</strong> <span th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span></p>
+        <p><strong>Врач:</strong> <span th:text="${doctor.fio}"></span></p>
+    </div>
+
+    <div class="section">
+        <h3>📋 Направления по приёму</h3>
+        <div th:if="${existingDirections.isEmpty()}" class="empty-message">
+            <p>Нет добавленных направлений</p>
+        </div>
+        <div th:each="direction : ${existingDirections}" class="direction-card">
+            <div class="direction-header">
+                <span class="direction-name" th:text="${direction.serviceName}"></span>
+                <span th:class="${direction.statusVypolneniyaUslugi ? 'direction-status status-completed' : 'direction-status status-pending'}">
+                    <span th:if="${direction.statusVypolneniyaUslugi}">✓ Выполнено</span>
+                    <span th:unless="${direction.statusVypolneniyaUslugi}">⏳ Ожидает</span>
+                </span>
+            </div>
+            <div class="direction-details">
+                <div class="detail-row">
+                    <span class="detail-label">Тип:</span>
+                    <span th:text="${direction.serviceType}"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Стоимость:</span>
+                    <span th:text="${direction.serviceCost} + ' руб.'"></span>
+                </div>
+                <div class="detail-row" th:if="${direction.primechanie != null}">
+                    <span class="detail-label">Примечание:</span>
+                    <span th:text="${direction.primechanie}"></span>
+                </div>
+                <div class="detail-row" th:if="${direction.statusVypolneniyaUslugi}">
+                    <span class="detail-label">Результаты:</span>
+                    <span th:text="${direction.podrobnyeRezultatyUslugi}"></span>
+                </div>
+                <div class="detail-row" th:if="${direction.statusVypolneniyaUslugi}">
+                    <span class="detail-label">Норма:</span>
+                    <span th:text="${direction.norma ? 'В норме' : 'Отклонение от нормы'}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a th:href="@{/doctor/chief/all-appointments}" class="btn-back">← Вернуться к списку приёмов</a>
+</div>
+</body>
+</html>

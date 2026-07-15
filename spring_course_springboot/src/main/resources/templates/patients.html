@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список пациентов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-badge {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 25px;
+            font-size: 0.85em;
+        }
+
+        .btn-chief {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #e67e22;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-chief:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        tr {
+            transition: all 0.3s;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+            transform: translateX(3px);
+        }
+
+        td {
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 60px 40px;
+            color: #999;
+        }
+
+        .empty-message p {
+            margin-bottom: 15px;
+        }
+
+        .empty-message a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .empty-message a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+                overflow-x: auto;
+            }
+
+            th, td {
+                padding: 10px 12px;
+                font-size: 0.85em;
+            }
+
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Список пациентов</h1>
+        <p>Все зарегистрированные пациенты в системе</p>
+    </div>
+
+    <div class="content">
+        <div class="button-group">
+            <div class="stats-badge">
+                Всего пациентов: <span th:text="${#lists.size(patients)}">0</span>
+            </div>
+            <a th:href="@{/doctor/chief/dashboard}" class="btn-chief">Вернуться на страницу главного врача</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(patients)}" class="empty-message">
+            <p>📋 Нет зарегистрированных пациентов</p>
+            <a th:href="@{/register}">Зарегистрировать первого пациента</a>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(patients)}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>ФИО</th>
+                <th>Дата рождения</th>
+                <th>Телефон</th>
+                <th>Номер полиса</th>
+                <th>Логин</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="patient : ${patients}">
+                <td th:text="${patient.kodPacienta}"></td>
+                <td th:text="${patient.fio}"></td>
+                <td th:text="${#dates.format(patient.dataRozhdeniya, 'dd.MM.yyyy')}"></td>
+                <td th:text="${patient.telefon}"></td>
+                <td th:text="${patient.nomerPolisa}"></td>
+                <td th:text="${patient.login}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{/}" class="back-link">← Вернуться на главную</a>
+    </div>
+</div>
+</body>
+</html>

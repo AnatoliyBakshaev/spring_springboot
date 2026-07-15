@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация пациента</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2c3e50;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #1a252f;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .date-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-group input {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .date-group {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📝 Регистрация нового пациента</h1>
+        <p>Заполните форму для регистрации</p>
+    </div>
+
+    <div class="content">
+        <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+        <form action="#" th:action="@{/register}" th:object="${patient}" method="post">
+            <div class="form-group">
+                <label for="fio">ФИО *</label>
+                <input type="text" id="fio" th:field="*{fio}" required placeholder="Иванов Иван Иванович">
+            </div>
+
+            <div class="form-group">
+                <label>Дата рождения</label>
+                <div class="date-group">
+                    <input type="text" name="day" placeholder="День" maxlength="2">
+                    <input type="text" name="month" placeholder="Месяц" maxlength="2">
+                    <input type="text" name="year" placeholder="Год" maxlength="4">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="telefon">Телефон</label>
+                <input type="tel" id="telefon" th:field="*{telefon}" placeholder="+7-999-123-45-67">
+            </div>
+
+            <div class="form-group">
+                <label for="nomerPolisa">Номер полиса</label>
+                <input type="number" id="nomerPolisa" th:field="*{nomerPolisa}" placeholder="1234567890123456">
+            </div>
+
+            <div class="form-group">
+                <label for="login">Логин *</label>
+                <input type="text" id="login" th:field="*{login}" required placeholder="ivanov_ivan">
+            </div>
+
+            <div class="form-group">
+                <label for="parol">Пароль *</label>
+                <input type="password" id="parol" th:field="*{parol}" required placeholder="******">
+            </div>
+
+            <button type="submit">Зарегистрировать пациента</button>
+        </form>
+
+        <a th:href="@{/}" class="back-link">← Вернуться на главную</a>
+    </div>
+</div>
+</body>
+</html>

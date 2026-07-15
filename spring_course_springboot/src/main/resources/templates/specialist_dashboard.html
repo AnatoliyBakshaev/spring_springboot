@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель врача-специалиста</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            letter-spacing: 1px;
+        }
+
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-left: 15px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .role-badge:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border: none;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::after {
+            content: '🏥';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .welcome-card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+
+        .welcome-card p {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2c3e50, #3498db, #2c3e50);
+            transform: translateX(-100%);
+            transition: transform 0.5s;
+        }
+
+        .info-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+
+        .info-item:hover {
+            border-bottom-color: #3498db;
+            padding-left: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 140px;
+            font-size: 0.9em;
+        }
+
+        .info-label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+            font-size: 0.8em;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-working {
+            background: linear-gradient(135deg, #d4edda, #a8e6cf);
+            color: #155724;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .actions {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .actions:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .actions h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            font-size: 1.3em;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #e67e22;
+        }
+
+        .btn-secondary:hover {
+            background: #d35400;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        /* Стили для таблицы пациентов */
+        .patients-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .patients-section:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .patients-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .patients-header h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+
+        .patients-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+        }
+
+        .patients-table th, .patients-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .patients-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .patients-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .btn {
+                display: block;
+                text-align: center;
+                margin-right: 0;
+                border-radius: 10px;
+            }
+
+            .info-label {
+                width: 110px;
+            }
+
+            .welcome-card::after {
+                font-size: 50px;
+                bottom: -10px;
+                right: -10px;
+            }
+
+            .patients-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-content">
+        <div>
+            <h1>Поликлиника</h1>
+            <span class="role-badge">Врач-специалист</span>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn">🚪 Выйти</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Здравствуйте, <span th:text="${doctor.fio}"></span>!</h2>
+        <p>Добро пожаловать в вашу рабочую панель. Здесь вы можете вести прием пациентов и просматривать список ваших пациентов.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>Личная информация</h3>
+            <div class="info-item">
+                <span class="info-label">ФИО</span>
+                <span class="info-value" th:text="${doctor.fio}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">ID сотрудника</span>
+                <span class="info-value" th:text="${doctor.kodSotrudnika}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Номер кабинета</span>
+                <span class="info-value" th:text="${doctor.nomerKabineta}"></span>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>💼 Рабочая информация</h3>
+            <div class="info-item">
+                <span class="info-label">Специализация</span>
+                <span class="info-value" th:text="${doctor.specializationName}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Статус</span>
+                <span class="info-value">
+                    <span th:class="${doctor.statusRaboty == 'работает' ? 'status-badge status-working' : 'status-badge'}"
+                          th:text="${doctor.statusRaboty}"></span>
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Всего пациентов</span>
+                <span class="info-value" th:text="${patients.size()}">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a th:href="@{/doctor/specialist/appointments}" class="btn">Мои приёмы</a>
+    </div>
+
+    <!-- Список пациентов врача -->
+    <div class="patients-section">
+        <div class="patients-header">
+            <h3>👥 Мои пациенты</h3>
+        </div>
+
+        <div th:if="${patients != null and !patients.isEmpty()}">
+            <table class="patients-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ФИО</th>
+                    <th>Дата рождения</th>
+                    <th>Телефон</th>
+                    <th>Номер полиса</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="patient : ${patients}">
+                    <td th:text="${patient.kodPacienta}"></td>
+                    <td th:text="${patient.fio}"></td>
+                    <td th:text="${#dates.format(patient.dataRozhdeniya, 'dd.MM.yyyy')}"></td>
+                    <td th:text="${patient.telefon}"></td>
+                    <td th:text="${patient.nomerPolisa}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${patients == null or patients.isEmpty()}" class="empty-message">
+            <p>У вас пока нет пациентов</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

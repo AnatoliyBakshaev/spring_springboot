@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Направления на услуги</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .welcome-card::after {
+            content: '📋';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .welcome-card h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card p {
+            margin-bottom: 5px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .section:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        label::before {
+            content: '▸';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            font-family: inherit;
+            background: white;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            padding: 10px;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:hover::after {
+            width: 150px;
+            height: 150px;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8em;
+        }
+
+        .direction-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2c3e50;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .direction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(44,62,80,0.02) 0%, rgba(44,62,80,0) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.5s;
+        }
+
+        .direction-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .direction-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .direction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .direction-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .direction-name::before {
+            content: '📌 ';
+        }
+
+        .direction-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #d4edda, #a8e6cf);
+            color: #155724;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .direction-details {
+            margin-top: 10px;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .detail-row:hover {
+            padding-left: 5px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 90px;
+            font-size: 0.85em;
+        }
+
+        .detail-label::before {
+            content: '•';
+            color: #3498db;
+            margin-right: 6px;
+        }
+
+        .detail-value {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+            transform: translateX(-3px);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .row-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .row-2cols {
+                grid-template-columns: 1fr;
+            }
+
+            .direction-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .btn {
+                display: block;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .welcome-card::after {
+                font-size: 50px;
+                bottom: -10px;
+                right: -10px;
+            }
+
+            .detail-label {
+                min-width: 100%;
+            }
+
+            .detail-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <h1>Поликлиника - Направления на услуги</h1>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn">🚪 Выйти</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Приём пациента: <span th:text="${patient.fio}"></span></h2>
+        <p>Дата и время: <span th:text="${#dates.format(appointment.dataVremyaPriema, 'dd.MM.yyyy HH:mm')}"></span></p>
+        <p><strong>Жалобы:</strong> <span th:text="${appointment.zhaloby != null ? appointment.zhaloby : 'Не указаны'}"></span></p>
+    </div>
+
+    <div class="row-2cols">
+        <!-- Добавление нового направления -->
+        <div class="section">
+            <h3>➕ Добавить направление</h3>
+            <form th:action="@{/doctor/appointment/__${appointment.kodPriema}__/add-direction}" method="post">
+                <div class="form-group">
+                    <label for="uslugaId">Выберите услугу</label>
+                    <select id="uslugaId" name="uslugaId" required>
+                        <option value="">-- Выберите услугу --</option>
+                        <option th:each="usluga : ${allUslugi}"
+                                th:value="${usluga.kodUslugi}"
+                                th:text="${usluga.nazvanie} + ' (' + ${usluga.tip} + ') - ' + ${usluga.stoimostUslugi} + ' руб.'">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="note">Примечание</label>
+                    <textarea id="note" name="note" placeholder="Дополнительная информация по направлению..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">➕ Добавить направление</button>
+            </form>
+        </div>
+
+        <!-- Список существующих направлений -->
+        <div class="section">
+            <h3>📋 Направления по приёму</h3>
+            <div th:if="${existingDirections.isEmpty()}" class="empty-message">
+                <p>Нет добавленных направлений</p>
+            </div>
+            <div th:each="direction : ${existingDirections}" class="direction-card">
+                <div class="direction-header">
+                    <span class="direction-name" th:text="${direction.serviceName}"></span>
+                    <span th:class="${direction.statusVypolneniyaUslugi ? 'direction-status status-completed' : 'direction-status status-pending'}">
+                        <span th:if="${direction.statusVypolneniyaUslugi}">✅ Выполнено</span>
+                        <span th:unless="${direction.statusVypolneniyaUslugi}">⏳ Ожидает</span>
+                    </span>
+                </div>
+                <div class="direction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Тип</span>
+                        <span class="detail-value" th:text="${direction.serviceType}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Стоимость</span>
+                        <span class="detail-value" th:text="${direction.serviceCost} + ' руб.'"></span>
+                    </div>
+                    <div class="detail-row" th:if="${direction.primechanie != null}">
+                        <span class="detail-label">Примечание</span>
+                        <span class="detail-value" th:text="${direction.primechanie}"></span>
+                    </div>
+                    <div class="detail-row" th:if="${direction.statusVypolneniyaUslugi}">
+                        <span class="detail-label">Результаты</span>
+                        <span class="detail-value" th:text="${direction.podrobnyeRezultatyUslugi}"></span>
+                    </div>
+                    <div class="detail-row" th:if="${direction.statusVypolneniyaUslugi}">
+                        <span class="detail-label">Норма</span>
+                        <span class="detail-value" th:text="${direction.norma ? '✅ В норме' : '⚠️ Отклонение от нормы'}"></span>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <a th:if="${!direction.statusVypolneniyaUslugi}"
+                       th:href="@{/doctor/direction/__${appointment.kodPriema}__/__${direction.kodUslugi}__/results}"
+                       class="btn btn-sm">✏️ Ввести результаты</a>
+                    <a th:href="@{/doctor/appointment/__${appointment.kodPriema}__/remove-direction/__${direction.kodUslugi}__}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Вы уверены, что хотите удалить направление?')">🗑️ Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a th:href="@{/doctor/specialist/appointments}" class="btn-back">← Вернуться к списку приёмов</a>
+</div>
+</body>
+</html>
